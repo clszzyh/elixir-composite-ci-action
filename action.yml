@@ -1,10 +1,6 @@
 name: "elixir-composite-ci-action"
 description: "A composite ci action for elixir."
 inputs:
-  github_job:
-    description: "GITHUB JOB. Default: `github.job`"
-    default: '${{ github.job }}'
-    required: false
   cache_version:
     description: "CACHE VERSION"
     required: false
@@ -25,5 +21,31 @@ runs:
       shell: bash
       run: |
         echo ::set-output name=JOB::${{ github.job }}
+        echo ::set-output name=RUN_ID::${{ github.run_id }}
+        echo ::set-output name=RUN_NUMBER::${{ github.run_number }}
         START_TIME=$(date +%s)
         echo ::set-output name=START_TIME::$START_TIME
+    - name: Get tag version
+      id: get_tag_version
+      shell: bash
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+    - name: Modify version
+      if: contains(github.ref, 'tags/v')
+      shell: bash
+      run: |
+        NEW_VERSION=$(echo $VERSION | sed -e 's/^v//')
+        echo $NEW_VERSION
+        if [ -f VERSION ]; then echo $NEW_VERSION > VERSION; fi
+      env:
+        VERSION: ${{ steps.get_tag_version.outputs.VERSION }}
+    - name: Set up Elixir
+      uses: actions/setup-elixir@v1
+      with:
+        elixir-version: ${{ matrix.elixir }}
+        otp-version: ${{ matrix.otp }}
+    - name: Build info
+      shell: bash
+      run: elixir -v
+    - name: Print env
+      shell: bash
+      run: env
