@@ -1,0 +1,29 @@
+name: ci
+
+# https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions
+# https://github.com/HashNuke/heroku-buildpack-elixir-otp-builds/blob/master/otp-versions
+# https://github.com/elixir-lang/elixir/releases
+
+
+on:
+  push:
+    tags: [ "v*.*.*" ]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+
+
+jobs:
+  build:
+    name: Build and test (OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        elixir: ["1.11.3"]
+        otp: [23.2.1]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          PAT: ${{ secrets.PERSONAL_TOKEN }}
+          CACHE_VERSION: ${{ secrets.CACHE_VERSION }}
