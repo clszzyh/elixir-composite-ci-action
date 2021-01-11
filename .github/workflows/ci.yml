@@ -4,14 +4,14 @@ name: ci
 # https://github.com/HashNuke/heroku-buildpack-elixir-otp-builds/blob/master/otp-versions
 # https://github.com/elixir-lang/elixir/releases
 
-
 on:
   push:
+    branches: [ main ]
     tags: [ "v*.*.*" ]
     paths-ignore:
       - '**.md'
   pull_request:
-
+    branches: [ main ]
 
 jobs:
   build:

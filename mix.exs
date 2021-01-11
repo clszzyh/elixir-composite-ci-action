@@ -42,7 +42,7 @@ defmodule Demo.MixProject do
 
   defp releases do
     [
-      demo: [
+      main: [
         include_executables_for: [:unix],
         steps: [:assemble, &copy_extra_files/1],
         applications: [runtime_tools: :permanent]
@@ -85,6 +85,7 @@ defmodule Demo.MixProject do
 
   defp aliases do
     [
+      docker_build: "cmd docker build -t elixir_bot:latest .",
       ci: [
         "compile --warnings-as-errors --force --verbose",
         "format --check-formatted",
